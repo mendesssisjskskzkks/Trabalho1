@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechQuiz: Produção e Processamento de Alimentos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap');
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #0f172a;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(17, 24, 39, 1) 0, transparent 50%), 
+                radial-gradient(at 50% 0%, rgba(55, 65, 81, 1) 0, transparent 50%), 
+                radial-gradient(at 100% 0%, rgba(17, 24, 39, 1) 0, transparent 50%);
+            color: #f8fafc;
+        }
+
+        .font-tech {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.1);
+        }
+
+        .btn-option {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-option:hover {
+            border-color: #38bdf8;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, #0284c7 0%, #38bdf8 100%);
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.6);
+            transform: scale(1.05);
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Neon glow for progress bar */
+        .progress-glow {
+            box-shadow: 0 0 10px #38bdf8, 0 0 20px #38bdf8;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <!-- Container Principal -->
+    <div id="app-container" class="glass-panel rounded-2xl p-8 max-w-3xl w-full relative overflow-hidden fade-in">
+        
+        <!-- Tela de Início -->
+        <div id="start-screen" class="text-center">
+            <div class="inline-block p-4 rounded-full bg-slate-800 mb-6 border border-sky-500/30">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-sky-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                </svg>
+            </div>
+            <h1 class="font-tech text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-blue-600 mb-4">
+                AGRO & FOOD TECH QUIZ
+            </h1>
+            <p class="text-slate-300 mb-8 text-lg">
+                Teste seus conhecimentos sobre o processamento de alimentos, impactos da indústria e operações de produção no campo.
+            </p>
+            <div class="flex flex-col gap-4 text-sm text-slate-400 mb-8 text-left bg-slate-800/50 p-4 rounded-lg border border-slate-700">
+                <p>⚡ <b>Sistema Aleatório:</b> 10 perguntas serão sorteadas a cada rodada.</p>
+                <p>🧠 <b>Temas:</b> Alimentos In Natura, Ultraprocessados, Monocultura, Orgânicos e mais.</p>
+            </div>
+            <button onclick="startQuiz()" class="btn-primary font-tech text-white font-bold py-3 px-10 rounded-full text-xl uppercase tracking-wider">
+                INICIAR SISTEMA
+            </button>
+        </div>
+
+        <!-- Tela do Quiz -->
+        <div id="quiz-screen" class="hidden">
+            <!-- Cabeçalho do Quiz -->
+            <div class="flex justify-between items-center mb-6">
+                <span class="font-tech text-sky-400 font-bold" id="question-counter">Q: 1/10</span>
+                <div class="w-2/3 h-2 bg-slate-700 rounded-full overflow-hidden">
+                    <div id="progress-bar" class="h-full bg-sky-400 progress-glow w-0 transition-all duration-300"></div>
+                </div>
+            </div>
+
+            <!-- Pergunta -->
+            <h2 id="question-text" class="text-2xl font-bold mb-6 text-white min-h-[5rem]">
+                Carregando pergunta...
+            </h2>
+
+            <!-- Opções -->
+            <div id="options-container" class="grid grid-cols-1 gap-4">
+                <!-- Botões injetados via JS -->
+            </div>
+        </div>
+
+        <!-- Tela de Resultados -->
+        <div id="result-screen" class="hidden text-center fade-in">
+            <h2 class="font-tech text-3xl font-bold text-sky-400 mb-2">ANÁLISE CONCLUÍDA</h2>
+            <p class="text-slate-400 mb-8">Processamento de dados finalizado com sucesso.</p>
+            
+            <div class="relative w-48 h-48 mx-auto mb-6">
+                <svg class="w-full h-full" viewBox="0 0 36 36">
+                    <path class="text-slate-700" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3"/>
+                    <path id="circle-progress" class="text-sky-400" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" style="transition: stroke-dasharray 1s ease-out;"/>
+                </svg>
+                <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
+                    <span id="percentage-text" class="font-tech text-4xl font-bold text-white">0%</span>
+                </div>
+            </div>
+
+            <p id="score-text" class="text-xl text-slate-300 mb-2">Você acertou <span id="correct-count" class="font-bold text-white">0</span> de 10 perguntas.</p>
+            <p id="feedback-text" class="text-lg font-bold mb-8 min-h-[2rem]"></p>
+
+            <button onclick="resetQuiz()" class="btn-primary font-tech text-white font-bold py-3 px-8 rounded-full text-lg uppercase tracking-wider">
+                REINICIAR SISTEMA
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        // Banco de Dados de Perguntas (15 perguntas disponíveis para sorteio)
+        const allQuestions = [
+            {
+                question: "O que caracteriza um alimento 'ultraprocessado' segundo o Guia Alimentar para a População Brasileira?",
+                options: [
+                    "Alimentos que passaram por cozimento prolongado em casa.",
+                    "Fórmulas industriais complexas, com muitos aditivos (corantes, emulsificantes) e substâncias de uso exclusivamente industrial.",
+                    "Alimentos colhidos diretamente do campo, sem nenhum tipo de lavagem.",
+                    "Alimentos embalados a vácuo para maior duração, contendo apenas sal."
+                ],
+                answer: 1
+            },
+            {
+                question: "Qual das alternativas é um exemplo clássico de alimento *in natura* ou minimamente processado?",
+                options: [
+                    "Biscoito recheado sabor morango.",
+                    "Salsicha de frango.",
+                    "Grãos de feijão secos embalados em pacote de 1kg.",
+                    "Macarrão instantâneo com tempero pronto."
+                ],
+                answer: 2
+            },
+            {
+                question: "Na produção agrícola do agronegócio, o que define a 'monocultura'?",
+                options: [
+                    "O cultivo de diversas espécies de plantas no mesmo terreno para proteger o solo.",
+                    "O plantio de uma única espécie agrícola (como soja ou milho) em grandes extensões de terra.",
+                    "A criação de animais e plantas integrados no mesmo ambiente.",
+                    "A produção exclusiva de alimentos orgânicos certificados."
+                ],
+                answer: 1
+            },
+            {
+                question: "Por que a indústria de alimentos utiliza tantos aditivos químicos em produtos ultraprocessados?",
+                options: [
+                    "Para aumentar o valor nutricional e vitamínico do produto final.",
+                    "Para facilitar a digestão dos alimentos pelo corpo humano.",
+                    "Para substituir o uso de agrotóxicos na agricultura.",
+                    "Para dar cor, sabor, textura e disfarçar sabores indesejáveis de ingredientes baratos."
+                ],
+                answer: 3
+            },
+            {
+                question: "Qual é o principal papel da agricultura familiar no Brasil?",
+                options: [
+                    "É responsável por produzir a maior parte da base alimentar (feijão, hortaliças, leite) que chega à mesa dos brasileiros.",
+                    "Produzir commodities (soja e milho) exclusivamente para exportação.",
+                    "Fornecer insumos químicos para grandes fazendas.",
+                    "Produzir apenas alimentos ultraprocessados para redes de fast-food."
+                ],
+                answer: 0
+            },
+            {
+                question: "O que são 'ingredientes culinários processados'?",
+                options: [
+                    "Refrigerantes e sucos de caixinha.",
+                    "Substâncias extraídas da natureza ou de alimentos (óleos, sal, açúcar) usadas para temperar e cozinhar.",
+                    "Carnes frescas recém-abatidas.",
+                    "Refeições prontas congeladas de micro-ondas."
+                ],
+                answer: 1
+            },
+            {
+                question: "Qual é a forma mais fácil de identificar um alimento ultraprocessado no rótulo do supermercado?",
+                options: [
+                    "Pelo selo de produto orgânico.",
+                    "Pela data de validade muito curta.",
+                    "Lendo a lista de ingredientes: geralmente tem 5 ou mais itens, com nomes de substâncias químicas desconhecidas.",
+                    "Observando se a embalagem é feita de plástico reciclável."
+                ],
+                answer: 2
+            },
+            {
+                question: "O que é a técnica de 'extrusão', frequentemente utilizada na indústria de ultraprocessados?",
+                options: [
+                    "Um processo termomecânico industrial que altera a estrutura de amidos/proteínas para dar forma a salgadinhos e cereais matinais.",
+                    "Um método de agricultura sustentável sem uso de máquinas.",
+                    "A extração de sucos naturais de frutas através de prensagem a frio.",
+                    "Um tipo de aditivo natural retirado de plantas amazônicas."
+                ],
+                answer: 0
+            },
+            {
+                question: "Como o alto consumo de ultraprocessados impacta o meio ambiente?",
+                options: [
+                    "Diminui o desmatamento, pois são fabricados apenas em laboratório.",
+                    "Gera grande volume de lixo plástico (embalagens) e estimula cadeias longas de produção baseadas em monoculturas.",
+                    "Aumenta a biodiversidade no campo devido à variedade de ingredientes utilizados.",
+                    "Reduz as emissões de carbono em 90% comparado ao consumo de vegetais."
+                ],
+                answer: 1
+            },
+            {
+                question: "Qual a diferença básica entre um alimento PROCESSADO (ex: queijo, pão francês) e um ULTRAPROCESSADO (ex: salgadinho de pacote)?",
+                options: [
+                    "Não há diferença, ambos fazem o mesmo mal à saúde.",
+                    "O processado é feito na indústria e o ultraprocessado é feito em casa.",
+                    "O processado usa métodos tradicionais (adição de sal/fermento a um alimento in natura). O ultraprocessado é uma formulação sintética complexa.",
+                    "O processado é sempre líquido, enquanto o ultraprocessado é sempre sólido."
+                ],
+                answer: 2
+            },
+            {
+                question: "O que caracteriza a produção de alimentos orgânicos no campo?",
+                options: [
+                    "O uso intensivo de fertilizantes químicos para acelerar o crescimento.",
+                    "O cultivo baseado em princípios agroecológicos, sem o uso de agrotóxicos ou fertilizantes químicos sintéticos.",
+                    "O plantio exclusivo de sementes transgênicas (OGMs).",
+                    "A produção em laboratório sem contato com o solo."
+                ],
+                answer: 1
+            },
+            {
+                question: "Qual é a função principal dos agrotóxicos (defensivos agrícolas) no modelo de agronegócio tradicional?",
+                options: [
+                    "Combater pragas, ervas daninhas e doenças, garantindo alta produtividade em monoculturas.",
+                    "Aumentar a quantidade de vitaminas B e C nos alimentos colhidos.",
+                    "Substituir a necessidade de irrigação com água.",
+                    "Colorir artificialmente as plantas durante o crescimento."
+                ],
+                answer: 0
+            },
+            {
+                question: "O que significa a sigla OGM na produção agrícola?",
+                options: [
+                    "Organizações Gestoras de Monocultura.",
+                    "Operadores Gerais de Máquinas.",
+                    "Organismos Geneticamente Modificados (transgênicos), cujas sementes têm o DNA alterado em laboratório.",
+                    "Óleos e Gorduras Misturadas."
+                ],
+                answer: 2
+            },
+            {
+                question: "Qual das opções abaixo é um exemplo de alimento PROCESSADO (que teve adição de sal ou açúcar para conservação)?",
+                options: [
+                    "Refrigerante de cola.",
+                    "Maçã recém colhida.",
+                    "Peito de frango congelado cru.",
+                    "Sardinha em lata conservada em óleo e sal."
+                ],
+                answer: 3
+            },
+            {
+                question: "Sobre os impactos à saúde, o consumo excessivo de ultraprocessados está diretamente ligado a:",
+                options: [
+                    "Aumento de casos de obesidade, diabetes tipo 2 e doenças cardiovasculares.",
+                    "Fortalecimento do sistema imunológico e ganho de massa muscular magra.",
+                    "Diminuição dos níveis de colesterol ruim (LDL) na população.",
+                    "Cura de doenças respiratórias devido aos antioxidantes sintéticos."
+                ],
+                answer: 0
+            }
+        ];
+
+        let quizQuestions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        const screens = {
+            start: document.getElementById('start-screen'),
+            quiz: document.getElementById('quiz-screen'),
+            result: document.getElementById('result-screen')
+        };
+
+        // Algoritmo de Fisher-Yates para embaralhar o array
+        function shuffleArray(array) {
+            let currentIndex = array.length, randomIndex;
+            while (currentIndex != 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+
+        function startQuiz() {
+            // Sorteia 10 perguntas aleatórias do banco
+            let shuffled = shuffleArray([...allQuestions]);
+            quizQuestions = shuffled.slice(0, 10);
+            
+            currentQuestionIndex = 0;
+            score = 0;
+            
+            switchScreen('quiz');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const questionData = quizQuestions[currentQuestionIndex];
+            
+            // Atualiza UI
+            document.getElementById('question-counter').innerText = `Q: ${currentQuestionIndex + 1}/10`;
+            document.getElementById('progress-bar').style.width = `${((currentQuestionIndex) / 10) * 100}%`;
+            
+            // Animação de entrada
+            const qText = document.getElementById('question-text');
+            qText.classList.remove('fade-in');
+            void qText.offsetWidth; // trigger reflow
+            qText.classList.add('fade-in');
+            qText.innerText = questionData.question;
+
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+
+            // Gerar botões de opção
+            questionData.options.forEach((option, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'btn-option bg-slate-800 border border-slate-700 text-left p-4 rounded-xl text-slate-200 hover:text-white fade-in';
+                btn.style.animationDelay = `${index * 0.1}s`;
+                
+                btn.innerHTML = `
+                    <div class="flex items-start gap-3">
+                        <span class="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-slate-900 border border-slate-600 font-tech text-sky-400">
+                            ${String.fromCharCode(65 + index)}
+                        </span>
+                        <span class="pt-1">${option}</span>
+                    </div>
+                `;
+                
+                btn.onclick = () => selectAnswer(index);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function selectAnswer(selectedIndex) {
+            const correctIndex = quizQuestions[currentQuestionIndex].answer;
+            const buttons = document.querySelectorAll('.btn-option');
+            
+            // Desabilitar botões
+            buttons.forEach(btn => btn.disabled = true);
+
+            // Destacar resposta certa e errada
+            if (selectedIndex === correctIndex) {
+                buttons[selectedIndex].classList.replace('bg-slate-800', 'bg-green-900/50');
+                buttons[selectedIndex].classList.replace('border-slate-700', 'border-green-500');
+                score++;
+            } else {
+                buttons[selectedIndex].classList.replace('bg-slate-800', 'bg-red-900/50');
+                buttons[selectedIndex].classList.replace('border-slate-700', 'border-red-500');
+                buttons[correctIndex].classList.replace('bg-slate-800', 'bg-green-900/50');
+                buttons[correctIndex].classList.replace('border-slate-700', 'border-green-500');
+            }
+
+            // Aguardar e passar para próxima
+            setTimeout(() => {
+                currentQuestionIndex++;
+                if (currentQuestionIndex < quizQuestions.length) {
+                    loadQuestion();
+                } else {
+                    showResults();
+                }
+            }, 1500);
+        }
+
+        function showResults() {
+            switchScreen('result');
+            
+            const percentage = (score / 10) * 100;
+            document.getElementById('correct-count').innerText = score;
+            
+            // Animar porcentagem
+            let currentPercent = 0;
+            const percentText = document.getElementById('percentage-text');
+            const circleProgress = document.getElementById('circle-progress');
+            
+            const interval = setInterval(() => {
+                if (currentPercent >= percentage) {
+                    clearInterval(interval);
+                    percentText.innerText = `${percentage}%`;
+                } else {
+                    currentPercent++;
+                    percentText.innerText = `${currentPercent}%`;
+                }
+            }, 20); // velocidade da animação do número
+
+            // Animar círculo SVG
+            setTimeout(() => {
+                circleProgress.style.strokeDasharray = `${percentage}, 100`;
+                
+                // Mudar cor baseado no resultado
+                if(percentage >= 70) {
+                    circleProgress.classList.replace('text-sky-400', 'text-green-500');
+                    percentText.classList.replace('text-white', 'text-green-400');
+                } else if(percentage >= 40) {
+                    circleProgress.classList.replace('text-sky-400', 'text-yellow-500');
+                    percentText.classList.replace('text-white', 'text-yellow-400');
+                } else {
+                    circleProgress.classList.replace('text-sky-400', 'text-red-500');
+                    percentText.classList.replace('text-white', 'text-red-400');
+                }
+            }, 100);
+
+            // Mensagem de Feedback
+            const feedbackEl = document.getElementById('feedback-text');
+            if (percentage === 100) {
+                feedbackEl.innerText = "Excelente! Você é um especialista em tecnologia de alimentos e agronegócio.";
+                feedbackEl.className = "text-lg font-bold mb-8 text-green-400";
+            } else if (percentage >= 70) {
+                feedbackEl.innerText = "Muito bom! Você compreende bem a cadeia de produção e processamento alimentar.";
+                feedbackEl.className = "text-lg font-bold mb-8 text-sky-400";
+            } else if (percentage >= 40) {
+                feedbackEl.innerText = "Razoável. Há espaço para entender melhor o impacto dos alimentos ultraprocessados.";
+                feedbackEl.className = "text-lg font-bold mb-8 text-yellow-400";
+            } else {
+                feedbackEl.innerText = "Seu banco de dados precisa de atualização. Revise os conceitos sobre alimentos in natura e ultraprocessados!";
+                feedbackEl.className = "text-lg font-bold mb-8 text-red-400";
+            }
+        }
+
+        function resetQuiz() {
+            // Resetar cores do círculo de resultado
+            const circleProgress = document.getElementById('circle-progress');
+            const percentText = document.getElementById('percentage-text');
+            circleProgress.style.strokeDasharray = `0, 100`;
+            circleProgress.className = "text-sky-400";
+            percentText.className = "font-tech text-4xl font-bold text-white";
+            
+            switchScreen('start');
+        }
+
+        function switchScreen(screenName) {
+            Object.values(screens).forEach(screen => screen.classList.add('hidden'));
+            screens[screenName].classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
